@@ -13,7 +13,7 @@ MONEY = re.compile(r'R\$')
 HOURS = re.compile(r'[0-9]+h')
 HOURS_24_PATTERN = re.compile(r'[0-9]{1,2}[h:][0-9]{1,2}')
 HOURS_24_SEPARATOR = re.compile(r'[h:]')
-METRICS = re.compile(r'(([0-9]+\s*)((c*m)([²³23])?))')
+METRICS = re.compile(r'(([0-9]+\s*)((c?m)([²³23])?))')
 DATE_PATTERN = re.compile(r'([0-9]{1,2})\/([0-9]{1,2})(\/([0-9]{4,4}|[0-9]{2,2})){0,1}')
 APOSTROPHE = re.compile(r'(\s|^)([a-z])\'([a-z]+)(\s|$)')
 
@@ -52,7 +52,7 @@ def get_money_name(value: int, decimal: bool = False):
 
 def transform_money(money: str) -> str:
     number = MONEY.sub(' ', money).strip().split(',')
-    if number[0] == '':
+    if number[0].replace('.', '') == '':
         return ''
     integer_part = int(number[0].replace('.', ''))
     decimal_part = int(number[1]) if len(number) > 1 else None
