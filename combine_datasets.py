@@ -27,6 +27,9 @@ if __name__ == '__main__':
             filenames = sorted([os.path.basename(c) for c in combination])
             data = set()
             final_name = '-'.join([name.replace('.txt', '') for name in filenames])
+            if os.path.exists(os.path.join(args.output, f'{final_name}.txt')):
+                print('Skipping', final_name)
+                continue
             for filename in filenames:
                 data = data.union(load_file(os.path.join(args.path, filename)))
             with open(os.path.join(args.output, f'{final_name}.txt'), 'w') as f:

@@ -1,6 +1,7 @@
 import argparse
 from tqdm import tqdm
-from asr_language_model_evaluation.datasets import BRWaC, Wikipedia, Coraa, CommonVoice, CETUC, MultilingualLibriSpeech
+from asr_language_model_evaluation.datasets import BRWaC, Wikipedia, Coraa, CommonVoice, CETUC, MultilingualLibriSpeech, \
+    CetenFolha
 from asr_language_model_evaluation.preprocessing import normalize
 
 
@@ -10,7 +11,8 @@ datasets_type = {
     'coraa': Coraa,
     'commonvoice': CommonVoice,
     'cetuc': CETUC,
-    'mls': MultilingualLibriSpeech
+    'mls': MultilingualLibriSpeech,
+    'cetenfolha': CetenFolha
 }
 
 if __name__ == '__main__':
