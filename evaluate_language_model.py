@@ -50,11 +50,10 @@ def evaluate(asr_model_name: str, hypothesis_path: str, lm_model_name: str, outp
 
     def map_hypo_to_pred(batch):
         batch['predicted'] = [beam_decoder.decode(i) for i in batch['hypothesis']]
-        batch["target"] = batch["sentence"]
         return batch
 
     result = hypothesis.map(map_hypo_to_pred, batched=True, batch_size=1,
-                            remove_columns=list(hypothesis.features.keys()))
+                            remove_columns=['hypothesis'])
 
     wer = wer_metric.compute(predictions=result["predicted"], references=result["target"])
     prediction_df = pd.DataFrame(result)
