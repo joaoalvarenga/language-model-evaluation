@@ -1,6 +1,7 @@
 import argparse
-import pandas as pd
+import numpy as np
 import os
+import pandas as pd
 
 from typing import Set
 from datasets import load_dataset, load_metric, Dataset
@@ -49,7 +50,7 @@ def evaluate(asr_model_name: str, hypothesis_path: str, lm_model_name: str, outp
     beam_decoder = build_ctcdecoder(vocab_list, lm_model_name, unigrams=unigrams)
 
     def map_hypo_to_pred(batch):
-        batch['predicted'] = [beam_decoder.decode(i) for i in batch['hypothesis']]
+        batch['predicted'] = [beam_decoder.decode(np.asarray(i)) for i in batch['hypothesis']]
         return batch
 
     result = hypothesis.map(map_hypo_to_pred, batched=True, batch_size=1,
