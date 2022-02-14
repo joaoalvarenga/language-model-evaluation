@@ -11,6 +11,8 @@ datasets = "^1.18.2"
 pandas = "<4.0"
 tqdm = "^4.62.3"
 transformers = "^4.16.1"
+XlsxWriter = "^3.0.2"
+pyctcdecode = {git = "https://github.com/joaoalvarenga/pyctcdecode", rev = "mlm"}
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
