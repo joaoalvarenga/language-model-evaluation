@@ -59,10 +59,8 @@ def evaluate(asr_model_name: str, hypothesis_path: str, lm_model_name: str, outp
     wer = wer_metric.compute(predictions=result["predicted"], references=result["target"])
     prediction_df = pd.DataFrame(result)
     metadata_df = pd.DataFrame.from_dict({
-        'asr_model_name': [asr_model_name],
-        'hypothesis_path': [hypothesis_path],
-        'lm_model_name': [lm_model_name],
-        'wer': [wer]
+        'metadata': ['asr_model_name', 'hypothesis_path', 'lm_model_path', 'wer'],
+        'value': [asr_model_name, hypothesis_path, lm_model_name, wer]
     })
 
     lm_model_name = clean_model_name(os.path.basename(lm_model_name))
