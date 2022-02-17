@@ -39,7 +39,19 @@ def load_unigram_set_from_arpa(arpa_path: str) -> Set[str]:
     return unigrams
 
 
+def get_output_path(lm_model_name: str, hypothesis_path: str, output: str):
+    lm_model_name = clean_model_name(os.path.basename(lm_model_name))
+    hypothesis_path = clean_model_name(hypothesis_path)
+
+    filename = f'{hypothesis_path}-{lm_model_name}.xlsx'
+    return os.path.join(output, filename)
+
+
 def evaluate(asr_model_name: str, hypothesis_path: str, lm_model_name: str, output: str):
+    output_file_path = get_output_path(lm_model_name, hypothesis_path, output)
+    if os.path.exists(output_file_path):
+        print('Already exists ', output_file_path, '. Skipping...')
+        return
     processor = Wav2Vec2Processor.from_pretrained(asr_model_name)
     hypothesis = Dataset.load_from_disk(hypothesis_path)
 
@@ -63,11 +75,7 @@ def evaluate(asr_model_name: str, hypothesis_path: str, lm_model_name: str, outp
         'value': [asr_model_name, hypothesis_path, lm_model_name, wer]
     })
 
-    lm_model_name = clean_model_name(os.path.basename(lm_model_name))
-    hypothesis_path = clean_model_name(hypothesis_path)
 
-    filename = f'{hypothesis_path}-{lm_model_name}.xlsx'
-    output_file_path = os.path.join(output, filename)
     writer = pd.ExcelWriter(output_file_path, engine='xlsxwriter')
 
     prediction_df.to_excel(writer, sheet_name='Predictions')
