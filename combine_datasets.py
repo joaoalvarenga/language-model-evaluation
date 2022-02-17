@@ -12,6 +12,12 @@ def load_file(filename):
     return data
 
 
+def clean_dataset_name(name: str) -> str:
+    name = name.replace('.txt', '')
+    name = name.replace('.', '-')
+    return name
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(prog='Clean dataset')
     parser.add_argument("--path", type=str, required=True,
@@ -26,7 +32,7 @@ if __name__ == '__main__':
         for combination in tqdm(combinations, total=len(combinations)):
             filenames = sorted([os.path.basename(c) for c in combination])
             data = set()
-            final_name = '-'.join([name.replace('.txt', '') for name in filenames])
+            final_name = '-'.join([clean_dataset_name(name) for name in filenames])
             if os.path.exists(os.path.join(args.output, f'{final_name}.txt')):
                 print('Skipping', final_name)
                 continue
@@ -34,5 +40,3 @@ if __name__ == '__main__':
                 data = data.union(load_file(os.path.join(args.path, filename)))
             with open(os.path.join(args.output, f'{final_name}.txt'), 'w') as f:
                 f.write('\n'.join(data))
-
-
