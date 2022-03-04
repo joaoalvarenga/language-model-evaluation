@@ -1,6 +1,37 @@
 import argparse
-import numpy as np
 import os
+
+def clean_model_name(text: str) -> str:
+    text = text.replace('.binary', '')
+    text = text.replace('.arpa', '')
+    text = text.replace('/', '-')
+    return text
+
+def get_output_path(lm_model_name: str, hypothesis_path: str, output: str):
+    lm_model_name = clean_model_name(os.path.basename(lm_model_name))
+    hypothesis_path = clean_model_name(hypothesis_path)
+
+    filename = f'{hypothesis_path}-{lm_model_name}.xlsx'
+    return os.path.join(output, filename)
+
+def already_exists(lm_model_name, hypothesis_path, output):
+    output_file_path = get_output_path(lm_model_name, hypothesis_path, output)
+    if os.path.exists(output_file_path):
+        print('Already exists ', output_file_path, '. Skipping...')
+        quit()
+
+parser = argparse.ArgumentParser(prog='Evaluate Language Model')
+parser.add_argument('--asr_model_name', type=str, default='lgris/wav2vec2-large-xlsr-open-brazilian-portuguese-v2')
+parser.add_argument('--hypothesis_path', type=str, required=True)
+parser.add_argument('--lm_model_name', type=str, required=True,
+                    help="Model name on HF Hub or path, or file path for kenlm")
+parser.add_argument('--output', type=str, required=True, help='Output result path')
+args = parser.parse_args()
+
+already_exists(args.lm_model_name, args.hypothesis_path, args.output)
+
+
+import numpy as np
 import pandas as pd
 
 from typing import Set
@@ -12,11 +43,7 @@ chars_to_ignore_regex = '[\,\?\.\!\;\:\"]'  # noqa: W605
 wer_metric = load_metric("wer")
 
 
-def clean_model_name(text: str) -> str:
-    text = text.replace('.binary', '')
-    text = text.replace('.arpa', '')
-    text = text.replace('/', '-')
-    return text
+
 
 
 def load_unigram_set_from_arpa(arpa_path: str) -> Set[str]:
@@ -39,12 +66,7 @@ def load_unigram_set_from_arpa(arpa_path: str) -> Set[str]:
     return unigrams
 
 
-def get_output_path(lm_model_name: str, hypothesis_path: str, output: str):
-    lm_model_name = clean_model_name(os.path.basename(lm_model_name))
-    hypothesis_path = clean_model_name(hypothesis_path)
 
-    filename = f'{hypothesis_path}-{lm_model_name}.xlsx'
-    return os.path.join(output, filename)
 
 
 def evaluate(asr_model_name: str, hypothesis_path: str, lm_model_name: str, output: str):
@@ -52,6 +74,7 @@ def evaluate(asr_model_name: str, hypothesis_path: str, lm_model_name: str, outp
     if os.path.exists(output_file_path):
         print('Already exists ', output_file_path, '. Skipping...')
         return
+    print('Writing to', output_file_path)
     processor = Wav2Vec2Processor.from_pretrained(asr_model_name)
     hypothesis = Dataset.load_from_disk(hypothesis_path)
 
@@ -85,12 +108,6 @@ def evaluate(asr_model_name: str, hypothesis_path: str, lm_model_name: str, outp
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(prog='Evaluate Language Model')
-    parser.add_argument('--asr_model_name', type=str, default='lgris/wav2vec2-large-xlsr-open-brazilian-portuguese-v2')
-    parser.add_argument('--hypothesis_path', type=str, required=True)
-    parser.add_argument('--lm_model_name', type=str, required=True,
-                        help="Model name on HF Hub or path, or file path for kenlm")
-    parser.add_argument('--output', type=str, required=True, help='Output result path')
-    args = parser.parse_args()
+    
 
     evaluate(**vars(args))
