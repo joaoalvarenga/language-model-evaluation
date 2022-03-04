@@ -16,9 +16,11 @@ echo ""
 
 for filename in $DATA_FOLDER/*.txt; do
   for n in 3 4 5; do
-    fbname=$(basename "$filename" | cut -d. -f1)
-    model_path="$MODELS_FOLDER/$n-gram/$fbname-$n-gram.arpa"
-    echo "Evaluating $model_path"
-    python3 evaluate_language_model.py --hypothesis_path $HYPOTHESIS_PATH --lm_model_name $model_path --output $OUTPUT_FOLDER
+    for beam_width in 10 50; do
+      fbname=$(basename "$filename" | cut -d. -f1)
+      model_path="$MODELS_FOLDER/$n-gram/$fbname-$n-gram.arpa"
+      echo "Evaluating $model_path $beam_width"
+      python3 evaluate_language_model.py --beam_width $beam_width --hypothesis_path $HYPOTHESIS_PATH --lm_model_name $model_path --output $OUTPUT_FOLDER
+    done
   done
 done
