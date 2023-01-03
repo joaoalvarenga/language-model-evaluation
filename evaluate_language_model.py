@@ -25,7 +25,7 @@ def already_exists(lm_model_name, hypothesis_path, output, beam_width):
 
 
 parser = argparse.ArgumentParser(prog='Evaluate Language Model')
-parser.add_argument('--asr_model_name', type=str, default='lgris/wav2vec2-large-xlsr-open-brazilian-portuguese-v2')
+parser.add_argument('--asr_model_name', type=str)
 parser.add_argument('--hypothesis_path', type=str, required=True)
 parser.add_argument('--lm_model_name', type=str, required=True,
                     help="Model name on HF Hub or path, or file path for kenlm")
@@ -33,6 +33,9 @@ parser.add_argument('--output', type=str, required=True, help='Output result pat
 parser.add_argument('--beam_width', type=int, default=100)
 args = parser.parse_args()
 
+if args.lm_model_name.find('cv-corpus-7-0') > -1:
+    print('Skipping cv-7-0')
+    quit()
 already_exists(args.lm_model_name, args.hypothesis_path, args.output, args.beam_width)
 
 import numpy as np
@@ -87,7 +90,7 @@ def evaluate(asr_model_name: str, hypothesis_path: str, lm_model_name: str, outp
         return batch
 
     result = hypothesis.map(map_hypo_to_pred, batched=True, batch_size=1,
-                            remove_columns=['hypothesis'])
+                            remove_columns=['hypothesis'], keep_in_memory=True)
 
     wer = wer_metric.compute(predictions=result["predicted"], references=result["target"])
     prediction_df = pd.DataFrame(result)

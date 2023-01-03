@@ -14,13 +14,11 @@ echo ""
 #  done
 #done
 
-for filename in $DATA_FOLDER/*.txt; do
-  for n in 3 4 5; do
-    for beam_width in 100; do
+for n in 3 4 5; do
+    for beam_width in 10 50; do
       fbname=$(basename "$filename" | cut -d. -f1)
       model_path="$MODELS_FOLDER/$n-gram/$fbname-$n-gram.binary"
-      echo "Evaluating $model_path $beam_width"
-      python3 evaluate_language_model.py --beam_width $beam_width --hypothesis_path $HYPOTHESIS_PATH --lm_model_name $model_path --output $OUTPUT_FOLDER
+      echo "Evaluating $n-gram $beam_width"
+      python3 evaluate_language_model_multiple.py --beam_width $beam_width --hypothesis_path $HYPOTHESIS_PATH --models_folder $MODELS_FOLDER --order $n --data_folder $DATA_FOLDER --output $OUTPUT_FOLDER
     done
-  done
 done
