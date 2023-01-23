@@ -1,16 +1,15 @@
 # Language Model Evaluation for Automatic Speech Recognition
 
+Resources and extra documentation for the manuscript "Data-Centric Approach for Portuguese Speech Recognition: Language Model And Its Implications" published in IEEE Latin America Transactions.
+
+![Graphical abstract](/docs/graphical-abstract.png)
+
 
 ## Data
 
 ### Wikipedia Dump
 A wikipedia dump from 2018
 Download - http://www02.smt.ufrj.br/~igor.quintanilha/ptwiki-20181125.txt
-
-
-### BrWAC
-The Brazilian Portuguese Web as Corpus is a large corpus constructed in our lab following the Wacky framework, which was made public for research purposes.
-Download - https://www.inf.ufrgs.br/pln/wiki/index.php?title=BrWaC
 
 ### CETUC
 Contains approximately 145 hours of Brazilian Portuguese speech
@@ -39,5 +38,23 @@ Multilingual LibriSpeech (MLS) dataset is a large multilingual corpus suitable f
 Download - http://www.openslr.org/94/
 
 
+### Install depenencies
+First you need to manually install KenLM compiling from the instructions [here](https://github.com/kpu/kenlm).
+Then you can just run
+```
+poetry install
+```
 
+### Usage
+You can use `generate_hypothesis.py` to generate Wav2Vec2 hypothesis for decoding.
+```
+python3 generate_hypothesis.py \
+    --data_type commonvoice \
+    --data_folder ./data/cv-corpus-6.1-2020-12-11/pt/ \
+    --model_name ./wav2vec2-pt-cv-6.1-coraa \
+    --output_path ./hypothesis/cv-6.1-w2v-cv-6.1-coraa \
+    --device cuda
+```
+Now you can use `combine_datasets.py` to generate combinations of all datasets and estimate KenLM variations using `estimate_kenlm.sh`.
 
+Then you can use `evaluate_hf_kenlm_multiple.sh` to decode hypothesis varying some n-grams parameters and generate CSV with outputs.
